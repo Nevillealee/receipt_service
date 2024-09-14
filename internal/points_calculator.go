@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func calculatePoints(receipt *Receipt) int {
+func CalculatePoints(receipt *Receipt) int {
 	totalPoints := 0
 
 	alphanumeric := regexp.MustCompile(`[a-zA-Z0-9]`)
@@ -16,11 +16,13 @@ func calculatePoints(receipt *Receipt) int {
 	totalPoints += len(retailerChars)
 
 	total, err := strconv.ParseFloat(receipt.Total, 64)
+
 	if err == nil {
 		totalCents := int(total * 100)
 		if totalCents%100 == 0 {
 			totalPoints += 50
 		}
+
 		if totalCents%25 == 0 {
 			totalPoints += 25
 		}
@@ -30,8 +32,10 @@ func calculatePoints(receipt *Receipt) int {
 
 	for _, item := range receipt.Items {
 		desc := strings.TrimSpace(item.ShortDescription)
+
 		if len(desc)%3 == 0 {
 			price, err := strconv.ParseFloat(item.Price, 64)
+
 			if err == nil {
 				points := math.Ceil(price * 0.2)
 				totalPoints += int(points)
@@ -40,6 +44,7 @@ func calculatePoints(receipt *Receipt) int {
 	}
 
 	date, err := time.Parse("2006-01-02", receipt.PurchaseDate)
+
 	if err == nil {
 		if date.Day()%2 == 1 {
 			totalPoints += 6
@@ -47,8 +52,10 @@ func calculatePoints(receipt *Receipt) int {
 	}
 
 	t, err := time.Parse("15:04", receipt.PurchaseTime)
+
 	if err == nil {
 		purchaseTime := t.Hour()*60 + t.Minute()
+
 		if purchaseTime > 14*60 && purchaseTime < 16*60 {
 			totalPoints += 10
 		}
